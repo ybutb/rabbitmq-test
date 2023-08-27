@@ -1,0 +1,37 @@
+framework:
+  messenger:
+    default_bus: command.bus
+    buses:
+      command.bus: ~
+
+      response.bus:
+        middleware:
+          - 'App\MessageHandler\CorrelationIdMiddleware'
+
+    transports:
+      response_queue:
+        dsn: 'amqp://root:root@queue:5672'
+        options:
+          exchange:
+            name: 'ex.events'
+            type: 'direct'
+            default_publish_routing_key: '%routing_key_response%'
+          queues:
+            q.app2.response:
+              binding_keys:
+                - '%routing_key_response%'
+
+      requests:
+        dsn: 'amqp://root:root@queue:5672'
+        options:
+          exchange:
+            name: 'ex.events'
+            type: 'direct'
+            default_publish_routing_key: '%routing_key_request%'
+          queues:
+            q.requests:
+              binding_keys: ['%routing_key_request%']
+
+    routing:
+      'App\Message\AppMessage': [requests]
+      'App\Message\ResponseMessage': [response_queue]
