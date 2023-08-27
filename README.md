@@ -15,7 +15,7 @@ bin/console app:message <int>
 
 app-service simply multiplies the number by 2 and returns it back to the caller with stamp using the same request correlationId.
 
-There are 2 queues used for each requesting app and one queue for a responses from multiplier service.
+There is 1 queue used for requests and two queues for a responses to each app.
 All the queues are bound to the same exchange in rabbitmq.
 
-RPC clients has two separate buses in order to extract correlationId in middleware only for response.
+RPC clients has two separate buses in order to extract correlationId only on request.
